@@ -11,10 +11,10 @@
 	</h:head>
 	
 	<h:body>
-		<h:form>
-			<my:table displayColumns="checkbox,column1,column2,column3" items="#{ControllerBean.getList()}">
-				<p:column id="checkbox">
-					<h:selectBooleanCheckbox id="check" value="#{rowVar.column4}" />
+		<h:form id="form">
+			<my:table displayColumns="additional,title,label,value" items="#{ControllerBean.getList()}" id="table">
+				<p:column id="additional">
+					<h:selectBooleanCheckbox id="check" value="#{rowVar.additional}" />
 					<h:outputLabel for="check" value="Label" />
 				</p:column>
 			</my:table>
