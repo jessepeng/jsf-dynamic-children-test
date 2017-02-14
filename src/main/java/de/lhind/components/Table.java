@@ -131,20 +131,43 @@ public class Table extends UIPanel implements NamingContainer, SystemEventListen
 
 	/* Child components */
 
-	private static final String CHILD_DATA_TABLE = "wrappedDataTable";
-
 	private DataTable getChildDataTable() {
-		DataTable tempDataTable = (DataTable) getStateHelper().eval(CHILD_DATA_TABLE);
+		if (childDataTable != null) {
+			return childDataTable;
+		}
+		DataTable tempDataTable = findChildDataTable();
 		if (tempDataTable == null) {
 			tempDataTable = ComponentUtil.createJsfComponent(getFacesContext(), DataTable.class);
-			setChildDataTable(tempDataTable);
 		}
+		childDataTable = tempDataTable;
 		return tempDataTable;
 	}
-
-	private void setChildDataTable(DataTable value) {
-		getStateHelper().put(CHILD_DATA_TABLE, value);
+	
+	private DataTable findChildDataTable() {
+		for (UIComponent tempChild : getChildren()) {
+			if (tempChild instanceof DataTable) {
+				return (DataTable)tempChild;
+			}
+		}
+		return null;
 	}
+	
+	private DataTable childDataTable;
+	
+//	private static final String CHILD_DATA_TABLE = "wrappedDataTable";
+//
+//	private DataTable getChildDataTable() {
+//		DataTable tempDataTable = (DataTable) getStateHelper().eval(CHILD_DATA_TABLE);
+//		if (tempDataTable == null) {
+//			tempDataTable = ComponentUtil.createJsfComponent(getFacesContext(), DataTable.class);
+//			setChildDataTable(tempDataTable);
+//		}
+//		return tempDataTable;
+//	}
+//
+//	private void setChildDataTable(DataTable value) {
+//		getStateHelper().put(CHILD_DATA_TABLE, value);
+//	}
 
 	/* Private states */
 
@@ -184,6 +207,7 @@ public class Table extends UIPanel implements NamingContainer, SystemEventListen
 	 * Is called by the component handler when the component is created.
 	 */
 	public void onComponentCreated() {
+		getChildDataTable().setId(getId() + "_table");
 		getChildren().add(getChildDataTable());
 	}
 
@@ -243,7 +267,6 @@ public class Table extends UIPanel implements NamingContainer, SystemEventListen
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div", null);
 		writer.writeAttribute("id", getClientId(), null);
-		getChildDataTable().setId(getId() + "_table");
 
 		setVaryingTableProperties();
 
@@ -272,7 +295,6 @@ public class Table extends UIPanel implements NamingContainer, SystemEventListen
 		getChildDataTable().getFacets().clear();
 		// Create child columns and button panels
 		if (!isColumnsCreated()) {
-			createColumnsFromChildren();
 			// Create columns from fields
 			createColumnsFromFields(tempFieldNames);
 			// Reorder columns
